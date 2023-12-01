@@ -3,7 +3,6 @@
 *.idea
 .idea
 
-
 # Logs
 logs
 *.log
@@ -133,4 +132,8 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
+<<<<<<< HEAD
 .pnp.*
+=======
+.pnp.*
+>>>>>>> b1783b52211ff926c008273a4c5f068c88aaa63c

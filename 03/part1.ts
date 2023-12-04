@@ -1,11 +1,18 @@
 import fs from 'fs';
 
-type index = [number, number];
-interface numberSequence {
-  // each entry in the arr is a set of coordinates for a char making up the number
-  indices: index[];
-  // the value of the number as number
-  val: number;
+function findNumberIndexes(input: string): {start: number; end: number}[] {
+  const regex = /\d+/g;
+  const result: {start: number; end: number}[] = [];
+  let match;
+
+  while ((match = regex.exec(input)) !== null) {
+    result.push({
+      start: match.index,
+      end: match.index + match[0].length,
+    });
+  }
+
+  return result;
 }
 
 function hasNearbySymbol(rows: string[][], i: number, j: number): boolean {
@@ -26,7 +33,7 @@ function hasNearbySymbol(rows: string[][], i: number, j: number): boolean {
       rows[row] &&
       rows[row][col] &&
       rows[row][col] !== '.' &&
-      !isNumber(rows[row][col])
+      isNaN(Number(rows[row][col]))
     ) {
       return true;
     }
@@ -34,64 +41,24 @@ function hasNearbySymbol(rows: string[][], i: number, j: number): boolean {
   return false;
 }
 
-function isNumber(input: string): boolean {
-  return !isNaN(Number(input));
-}
-
-// each arr in the arr is a set of coodrinates for a number
-function getNumberIndices(row: string[], i: number): numberSequence[] {
-  const out: numberSequence[] = [];
-  let cur: index[] = [];
-  let inNumber = false;
-  for (let j = 0; j < row.length; j++) {
-    if (isNumber(row[j])) {
-      inNumber = true;
-      cur.push([i, j]);
-    } else {
-      // were in a number
-      if (inNumber) {
-        inNumber = false;
-        const numAsStr = cur.map(x => row[x[1]]).join('');
-        const fullNum: numberSequence = {
-          indices: cur,
-          val: Number(numAsStr),
-        };
-        out.push(fullNum);
-        cur = [];
-      }
-    }
-  }
-
-  // catch number at end of row. check if were in a number
-  if (inNumber) {
-    const numAsStr = cur.map(x => row[x[1]]).join('');
-    const fullNum: numberSequence = {
-      indices: cur,
-      val: Number(numAsStr),
-    };
-    out.push(fullNum);
-  }
-
-  return out;
-}
-
 function main() {
-  const data = fs.readFileSync('input.txt', 'utf-8');
-  // const data = fs.readFileSync('test.txt', 'utf-8');
+  // const data = fs.readFileSync('input.txt', 'utf-8');
+  const data = fs.readFileSync('test.txt', 'utf-8');
   const rows = data.split('\n').map(x => x.split(''));
   let total = 0;
 
-  let numbers: numberSequence[] = [];
   rows.forEach((row, i) => {
-    numbers = numbers.concat(getNumberIndices(row, i));
-  });
-
-  numbers.forEach(num => {
-    const isValid = num.indices
-      .map(x => hasNearbySymbol(rows, x[0], x[1]))
-      .some(x => x);
-    if (isValid) {
-      total += num.val;
+    const nums = findNumberIndexes(row.join(''));
+    for (const num of nums) {
+      let nearSymbol = false;
+      for (let j = num.start; j < num.end; j++) {
+        if (hasNearbySymbol(rows, i, j)) {
+          nearSymbol = true;
+        }
+      }
+      if (nearSymbol) {
+        total += Number(row.slice(num.start, num.end).join(''));
+      }
     }
   });
 

@@ -24,5 +24,8 @@
     "gts": "^5.2.0",
     "ts-node": "^10.9.1",
     "typescript": "~5.2.0"
+  },
+  "dependencies": {
+    "ts-treemap": "^1.1.0"
   }
 }

@@ -76,7 +76,6 @@ function sortHands(hands: Hand[]): Hand[] {
 
   const sorted = [];
   for (const type of handTypes) {
-    // somehow sort
     type[1].sort((a, b) => toHex(a.cards) - toHex(b.cards));
     sorted.push(...type[1]);
   }

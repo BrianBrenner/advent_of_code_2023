@@ -15,25 +15,6 @@ function getType(cards: string): string {
     }
   }
 
-  // handle jokers
-  if (counts.has('J')) {
-    const jCount = counts.get('J')!;
-    counts.delete('J');
-    if (jCount === 5) {
-      return 'five';
-    }
-    let maxKey = '';
-    let maxVal = 0;
-    counts.forEach((value, key) => {
-      if (value > maxVal) {
-        maxVal = value;
-        maxKey = key;
-      }
-    });
-
-    counts.set(maxKey, counts.get(maxKey)! + jCount);
-  }
-
   if (counts.size === 1) {
     return 'five';
   }
@@ -60,7 +41,7 @@ function getType(cards: string): string {
 function toHex(cards: string): number {
   const hexMap = new Map([
     ['T', 'A'],
-    ['J', '1'],
+    ['J', 'B'],
     ['Q', 'C'],
     ['K', 'D'],
     ['A', 'E'],

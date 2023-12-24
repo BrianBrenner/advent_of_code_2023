@@ -1,4 +1,5 @@
 import fs from 'fs';
+import {create} from 'node:domain';
 
 interface visited {
   left: boolean;
@@ -94,11 +95,7 @@ function countEnergized(tracker: visited[][]) {
   return count;
 }
 
-function main() {
-  const data = fs.readFileSync('input.txt', 'utf-8').trim();
-  // const data = fs.readFileSync('test.txt', 'utf-8');
-
-  const grid = data.split('\n').map(line => line.split(''));
+function createTracker(grid: string[][]) {
   const tracker: visited[][] = Array.from({length: grid.length}, () =>
     Array.from({length: grid[0].length}, () => ({
       left: false,
@@ -107,9 +104,38 @@ function main() {
       down: false,
     }))
   );
+  return tracker;
+}
 
-  traceLight(grid, tracker, 0, 0, 'right');
-  console.log(countEnergized(tracker));
+function main() {
+  const data = fs.readFileSync('input.txt', 'utf-8').trim();
+  // const data = fs.readFileSync('test.txt', 'utf-8');
+
+  const grid = data.split('\n').map(line => line.split(''));
+
+  let maxVal = 0;
+  for (let i = 0; i < grid.length; i++) {
+    const tracker = createTracker(grid);
+    traceLight(grid, tracker, i, 0, 'right');
+    maxVal = Math.max(maxVal, countEnergized(tracker));
+  }
+  for (let i = 0; i < grid.length; i++) {
+    const tracker = createTracker(grid);
+    traceLight(grid, tracker, i, grid[0].length - 1, 'left');
+    maxVal = Math.max(maxVal, countEnergized(tracker));
+  }
+  for (let j = 0; j < grid[0].length; j++) {
+    const tracker = createTracker(grid);
+    traceLight(grid, tracker, 0, j, 'down');
+    maxVal = Math.max(maxVal, countEnergized(tracker));
+  }
+  for (let j = 0; j < grid[0].length; j++) {
+    const tracker = createTracker(grid);
+    traceLight(grid, tracker, grid.length - 1, j, 'up');
+    maxVal = Math.max(maxVal, countEnergized(tracker));
+  }
+
+  console.log(maxVal);
 }
 
 // run with
